@@ -27,10 +27,11 @@ const PersonForm = (props) => {
     )
 }
 
-const Person = ({ persons, deletePerson }) => {
+const Person = ({ people, deletePerson }) => {
+
     return (
         <div>
-            {persons.map((person, i) => {
+            {people.map((person, i) => {
                 return <li key={i}>
                     {person.name} {person.number}
                     <button onClick={() => deletePerson(person.id)}>delete</button>
@@ -69,6 +70,16 @@ const App = () => {
     const [filter, setFilter] = useState('')
     const [errorMessage, setErrorMessage] = useState(null)
     const [successMessage, setSuccessMessage] = useState(null)
+    
+    const getPersons = () => {
+        personService
+            .getAll()
+            .then(data => {
+                setPersons(data.persons)
+            })
+    }
+
+    useEffect(getPersons, [])
 
     const successfulAction = msg => {
         setSuccessMessage(msg)
@@ -84,11 +95,6 @@ const App = () => {
         }, 2000);
     }
 
-    const getPersons = () => {
-        personService
-            .getAll()
-            .then(data => setPersons(data))
-    }
 
     const deletePerson = (id) => {
         const person = persons.find(person => person.id === id)
@@ -106,7 +112,6 @@ const App = () => {
         }
     }
 
-    useEffect(getPersons, [])
 
     const addPerson = (e) => {
         e.preventDefault()
@@ -177,7 +182,7 @@ const App = () => {
                 addNew={addPerson} />
             <h2>Numbers</h2>
             <ul>
-                <Person persons={filteredPersons} deletePerson={deletePerson} />
+                <Person people={filteredPersons} deletePerson={deletePerson} />
             </ul>
         </div>
     )
