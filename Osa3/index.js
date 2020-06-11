@@ -9,11 +9,17 @@ const app = express()
 
 morgan.token('content', function (req, res) { return JSON.stringify(req.body) })
 
+/////////////////////////////////////////////
+/////// MIDDLEWARES
+/////////////////////////////////////////////
 app.use(express.json())
 app.use(express.static('build'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 app.use(cors())
 
+/////////////////////////////////////////////
+/////// GET - /api/persons
+/////////////////////////////////////////////
 app.get("/api/persons", (req, res, next) => {
   Person.find({})
     .then(people => {
@@ -21,6 +27,9 @@ app.get("/api/persons", (req, res, next) => {
     })
 })
 
+/////////////////////////////////////////////
+/////// GET - /info
+/////////////////////////////////////////////
 app.get("/info", (req, res) => {
   let i = 0
   Person.find({}).then(people => {
@@ -30,6 +39,9 @@ app.get("/info", (req, res) => {
   })
 })
 
+/////////////////////////////////////////////
+/////// GET - /api/persons/:id
+/////////////////////////////////////////////
 app.get("/api/persons/:id", (req, res) => {
   Person.findById(req.params.id)
     .then(person => {
@@ -42,6 +54,9 @@ app.get("/api/persons/:id", (req, res) => {
     .catch(error => next(error))
 })
 
+/////////////////////////////////////////////
+/////// DELETE - /api/persons/:id
+/////////////////////////////////////////////
 app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
     .then(result => {
@@ -50,8 +65,12 @@ app.delete("/api/persons/:id", (req, res, next) => {
     .catch(error => next(error))
 })
 
-app.post("/api/persons/", (req, res) => {
+/////////////////////////////////////////////
+/////// POST - /api/persons
+/////////////////////////////////////////////
+app.post("/api/persons/", (req, res, next) => {
   const person = req.body
+  console.log(person)
 
   // If number or name missing, return error
   if (person.name === "" || person.number === "") {
@@ -60,16 +79,12 @@ app.post("/api/persons/", (req, res) => {
     })
   }
 
-  Person.find(person.name).then(res => {
+  Person.find({ name: person.name }).then(result => {
     return res.status(400).json({
       error: 'This person is already in database'
     })
   })
-
-  // Generate random id for person
-  const getRandomArbitrary = (min, max) => {
-    return Math.floor(Math.random() * (max - min) + min);
-  }
+    .catch(error => next(error))
 
   const newPerson = Person({
     name: person.name,
@@ -82,6 +97,9 @@ app.post("/api/persons/", (req, res) => {
   })
 })
 
+/////////////////////////////////////////////
+/////// PUT - /api/persons/:id
+/////////////////////////////////////////////
 app.put("/api/persons/:id", (req, res, next) => {
   const person = req.body
 
@@ -90,13 +108,16 @@ app.put("/api/persons/:id", (req, res, next) => {
     number: person.number
   }
 
-  Person.findByIdAndUpdate(req.params.id, updatedPerson, {new: true})
-  .then(updatedPerson => {
-    res.json(updatedPerson.toJSON())
-  })
-  .catch(error => next(error))
+  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON())
+    })
+    .catch(error => next(error))
 })
 
+/////////////////////////////////////////////
+/////// MIDDLEWARES
+/////////////////////////////////////////////
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
