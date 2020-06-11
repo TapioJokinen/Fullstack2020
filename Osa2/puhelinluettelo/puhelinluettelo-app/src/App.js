@@ -70,7 +70,7 @@ const App = () => {
     const [filter, setFilter] = useState('')
     const [errorMessage, setErrorMessage] = useState(null)
     const [successMessage, setSuccessMessage] = useState(null)
-    
+
     const getPersons = () => {
         personService
             .getAll()
@@ -117,14 +117,18 @@ const App = () => {
         e.preventDefault()
         let k = true
         let id_ = 0
+
         const nameObject = {
             name: newName,
             number: newNumber,
             id: id_
         }
+
         persons.forEach(person => {
-            (person.name === nameObject.name) ? k = false : k = true
-            id_ += 1
+            if (person.name === nameObject.name) {
+                k = false
+                id_ = person.id
+            }
         });
         if (k) {
             setPersons(persons.concat(nameObject))
@@ -139,8 +143,8 @@ const App = () => {
             if (window.confirm(txt)) {
                 personService
                     .update(id_, nameObject)
-                    .then(res => getPersons())
                     .then(res => {
+                        getPersons()
                         successfulAction(`${nameObject.name} updated successfully!`)
                     })
                     .catch(error => {
