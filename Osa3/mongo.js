@@ -42,6 +42,6 @@ if (process.argv.length === 5) {
             res.map(person => {
                 console.log(`${person.name} ${person.number}`)
             })
-
+            mongoose.connection.close()
         })
 }
