@@ -124,33 +124,37 @@ const App = () => {
             id: id_
         }
 
-        persons.forEach(person => {
-            if (person.name === nameObject.name) {
-                k = false
-                id_ = person.id
-            }
-        });
-        if (k) {
-            setPersons(persons.concat(nameObject))
-            personService
-                .create(nameObject)
-                .then(res => getPersons())
-                .then(res => {
-                    successfulAction(`${nameObject.name} added successfully!`)
-                })
+        if (nameObject.name === "" || nameObject.number === "") {
+            failedAction("Name or number was empty")
         } else {
-            const txt = `${nameObject.name} was already added to phonebook. Would you like to replace it?`
-            if (window.confirm(txt)) {
+            persons.forEach(person => {
+                if (person.name === nameObject.name) {
+                    k = false
+                    id_ = person.id
+                }
+            });
+            if (k) {
+                setPersons(persons.concat(nameObject))
                 personService
-                    .update(id_, nameObject)
+                    .create(nameObject)
+                    .then(res => getPersons())
                     .then(res => {
-                        getPersons()
-                        successfulAction(`${nameObject.name} updated successfully!`)
+                        successfulAction(`${nameObject.name} added successfully!`)
                     })
-                    .catch(error => {
-                        failedAction(`Person ${nameObject.name} is already removed from database.`)
-                        getPersons()
-                    })
+            } else {
+                const txt = `${nameObject.name} was already added to phonebook. Would you like to replace it?`
+                if (window.confirm(txt)) {
+                    personService
+                        .update(id_, nameObject)
+                        .then(res => {
+                            getPersons()
+                            successfulAction(`${nameObject.name} updated successfully!`)
+                        })
+                        .catch(error => {
+                            failedAction(`Person ${nameObject.name} is already removed from database.`)
+                            getPersons()
+                        })
+                }
             }
         }
     }

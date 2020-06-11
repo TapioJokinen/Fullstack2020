@@ -54,7 +54,7 @@ app.post("/api/persons/", (req, res) => {
   const person = req.body
 
   // If number or name missing, return error
-  if (person.name === undefined || person.number === undefined) {
+  if (person.name === "" || person.number === "") {
     return res.status(400).json({
       error: 'content missing'
     })
