@@ -75,7 +75,7 @@ const App = () => {
         personService
             .getAll()
             .then(data => {
-                setPersons(data.persons)
+                setPersons(data)
             })
     }
 

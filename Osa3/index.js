@@ -1,7 +1,9 @@
+require("dotenv").config()
 const express = require('express')
 const morgan = require("morgan")
 const cors = require('cors')
 
+const Person = require("./models/Person")
 
 const app = express()
 
@@ -38,25 +40,25 @@ const phonebook = {
 }
 
 app.get("/api/persons", (req, res) => {
-  res.send(phonebook)
+  Person.find({}).then(people => {
+    console.log(people)
+    res.send(people)
+  })
 })
 
 app.get("/info", (req, res) => {
   let i = 0
-  phonebook.persons.map(p => i += 1)
+  Person.find({}).then(people => {
+    console.log(people)
+  })
   const content = `<div><p>Phonebook has info for ${i} people</p><p>${new Date()}</p></div>`
   res.send(content)
 })
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id)
-  const person = phonebook.persons.find(person => person.id === id)
-
-  if (person) {
-      res.send(person)
-  } else {
-      res.status(404).end()
-  }
+  Person.findById(req.params.id).then(person => {
+    res.json(person)
+  })
 })
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -69,39 +71,36 @@ app.post("/api/persons/", (req, res) => {
   const person = req.body
 
   // If number or name missing, return error
-  if (!person.name || !person.number) {
+  if (person.name === undefined || person.number === undefined) {
       return res.status(400).json({ 
           error: 'content missing' 
         })
   }
 
-  // Check if name is already in phonebook
-  phonebook.persons.forEach(p => {
-      if (p.name === person.name) {
-          return res.status(400).json({ 
-              error: 'Name is already in phonebook' 
-            })
-      }
-  });
+  Person.find(person.name).then(res => {
+    return res.status(400).json({ 
+      error: 'This person is already in database' 
+    })
+  })
 
   // Generate random id for person
   const getRandomArbitrary = (min, max) =>  {
       return Math.floor(Math.random() * (max - min) + min);
     }
 
-  const newPerson = {
-      name: person.name,
-      number: person.number,
-      id: getRandomArbitrary(432, 92647129)
-  }
+  const newPerson = Person({
+    name: person.name,
+    number: person.number,
+    id: person.id
+  })
 
-  phonebook.persons = phonebook.persons.concat(newPerson)
-
-  res.json(person)
+  newPerson.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
