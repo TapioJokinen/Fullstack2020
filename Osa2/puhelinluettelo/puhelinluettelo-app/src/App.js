@@ -95,7 +95,6 @@ const App = () => {
         }, 2000);
     }
 
-
     const deletePerson = (id) => {
         const person = persons.find(person => person.id === id)
         if (window.confirm(`Delete person ${person.name}`)) {
@@ -112,7 +111,6 @@ const App = () => {
         }
     }
 
-
     const addPerson = (e) => {
         e.preventDefault()
         let k = true
@@ -126,11 +124,13 @@ const App = () => {
 
         if (nameObject.name === "" || nameObject.number === "") {
             failedAction("Name or number was empty")
+        } else if (nameObject.name.length < 3 || nameObject.number.length < 8) {
+            failedAction("Name or number was too short")
         } else {
             persons.forEach(person => {
                 if (person.name === nameObject.name) {
                     k = false
-                    id_ = person.id
+                    nameObject.id = person.id
                 }
             });
             if (k) {
@@ -145,7 +145,7 @@ const App = () => {
                 const txt = `${nameObject.name} was already added to phonebook. Would you like to replace it?`
                 if (window.confirm(txt)) {
                     personService
-                        .update(id_, nameObject)
+                        .update(nameObject.id, nameObject)
                         .then(res => {
                             getPersons()
                             successfulAction(`${nameObject.name} updated successfully!`)
@@ -194,7 +194,6 @@ const App = () => {
             </ul>
         </div>
     )
-
 }
 
 export default App

@@ -13,6 +13,7 @@ const create = (nameObject) => {
 }
 
 const update = (id, nameObject) => {
+    console.log(nameObject)
     const request = axios.put(`${baseUrl}/${id}`, nameObject)
     return request.then(res => res.data)
 }

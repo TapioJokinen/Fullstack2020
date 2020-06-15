@@ -70,26 +70,21 @@ app.delete("/api/persons/:id", (req, res, next) => {
 /////////////////////////////////////////////
 app.post("/api/persons/", (req, res, next) => {
   const person = req.body
-  console.log(person)
 
   // If number or name missing, return error
   if (person.name === "" || person.number === "") {
     return res.status(400).json({
       error: 'content missing'
     })
-  }
-
-  Person.find({ name: person.name }).then(result => {
+  } else if (person.name.length < 3 || person.number < 8) {
     return res.status(400).json({
-      error: 'This person is already in database'
+      error: 'Name or number is invalid'
     })
-  })
-    .catch(error => next(error))
+  }
 
   const newPerson = Person({
     name: person.name,
     number: person.number,
-    id: person.id
   })
 
   newPerson.save().then(savedPerson => {
@@ -105,10 +100,11 @@ app.put("/api/persons/:id", (req, res, next) => {
 
   const updatedPerson = {
     name: person.name,
-    number: person.number
+    number: person.number,
+    id: person.id
   }
 
-  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+  Person.findByIdAndUpdate(person.id, updatedPerson, { new: true })
     .then(updatedPerson => {
       res.json(updatedPerson.toJSON())
     })
