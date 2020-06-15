@@ -44,6 +44,38 @@ const mostBlogs = (blogs) => {
       }
 }
 
+const mostLikes = (blogs) => {
+    const authorsAndLikes = blogs.map(blog => {
+        return [
+            blog.author,blog.likes
+        ]
+    })
+
+    let bestAuthor = ""
+    let mostPoints = 0
+
+    for (let i = 0; i < authorsAndLikes.length; i++) {
+
+       const author = authorsAndLikes[i][0]
+       let points = 0
+
+       for (let j = 0; j < authorsAndLikes.length; j++) {
+           if (authorsAndLikes[j][0] === author) {
+               points += authorsAndLikes[j][1]
+           }
+       }
+
+       if (points >= mostPoints) {
+           bestAuthor = author
+           mostPoints = points
+       }
+    }
+    return {
+        author: bestAuthor,
+        likes: mostPoints
+    }
+}
+
 module.exports = {
-    dummy, totalLikes, favoriteBlog, mostBlogs
+    dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
