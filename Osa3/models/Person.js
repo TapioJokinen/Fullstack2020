@@ -3,6 +3,9 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const url = process.env.MONGODB_URL
 
+mongoose.set('useFindAndModify', false)
+
+
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(result => {
     console.log('connected to MongoDB')

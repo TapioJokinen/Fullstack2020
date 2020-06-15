@@ -73,16 +73,21 @@ app.post("/api/persons/", (req, res, next) => {
 
   // If number or name missing, return error
   if (person.name === "" || person.number === "") {
-    console.log("Here1")
     return res.status(400).json({
       error: 'content missing'
     })
   } else if (person.name.length < 3 || person.number < 8) {
-    console.log("Here2")
     return res.status(400).json({
       error: 'Name or number is invalid'
     })
   }
+
+  Person.find({ $or:[{name: person.name}, {number: person.number}]})
+    .then(response => {
+      return res.status(400).json({
+        error: 'Name or number is already in the database'
+      })
+    })
 
   const newPerson = Person({
     name: person.name,

@@ -141,6 +141,9 @@ const App = () => {
                     .then(res => {
                         successfulAction(`${nameObject.name} added successfully!`)
                     })
+                    .catch(error => {
+                        console.log(error)
+                    })
             } else {
                 const txt = `${nameObject.name} was already added to phonebook. Would you like to replace it?`
                 if (window.confirm(txt)) {
