@@ -5,6 +5,8 @@ const mongoose = require('mongoose')
 const config = require("./utils/config")
 const logger = require('./utils/logger')
 const blogRouter = require("./controllers/blog")
+const listHelper = require('./utils/list_helper')
+
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
