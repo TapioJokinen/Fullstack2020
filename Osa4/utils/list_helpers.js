@@ -18,16 +18,32 @@ const favoriteBlog = (blogs) => {
     let bestBlog = {}
 
     blogs.forEach(blog => {
-        console.log(blog)
         if (blog.likes >= maxLikes) {
             maxLikes = blog.likes
             bestBlog = blog
         }
     })
 
-    return bestBlog.likes
+    return bestBlog
+}
+
+const mostBlogs = (blogs) => {
+
+    const authors = blogs.map(blog => blog.author)
+
+    let counts = authors.reduce((a, c) => {
+        a[c] = (a[c] || 0) + 1;
+        return a;
+      }, {});
+      let maxCount = Math.max(...Object.values(counts));
+      let mostFrequent = Object.keys(counts).filter(k => counts[k] === maxCount);
+    
+      return {
+          author: mostFrequent,
+          blogs: maxCount
+      }
 }
 
 module.exports = {
-    dummy, totalLikes, favoriteBlog
+    dummy, totalLikes, favoriteBlog, mostBlogs
 }
