@@ -1,26 +1,10 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const mongoose = require('mongoose')
-const config = require("./utils/config")
+const app = require('./app') // varsinainen Express-sovellus
+const http = require('http')
+const config = require('./utils/config')
 const logger = require('./utils/logger')
-const blogRouter = require("./controllers/blog")
-const listHelper = require('./utils/list_helper')
 
+const server = http.createServer(app)
 
-mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        logger.info("connected to MongoDB!")
-    }).catch(() => {
-        logger.error("Error while connecting to MongoDB")
-    })
-
-app.use(express.json())
-app.use("/api/blogs", blogRouter)
-app.use(cors())
-
-
-const PORT = 3003
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+server.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`)
 })

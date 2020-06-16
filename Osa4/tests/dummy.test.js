@@ -1,5 +1,4 @@
 const listHelper = require("../utils/list_helpers")
-const blogRouter = require("../controllers/blog")
 
 test('dummy returns one', () => {
     const blogs = []
